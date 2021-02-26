@@ -70,7 +70,7 @@ public:
 
     smart_ptr(T &&p) : ptr{new T(p)} {}
 
-    smart_ptr() : ptr(new T) {}
+    smart_ptr() : ptr(nullptr) {}
 
     smart_ptr(const smart_ptr &o) = default;
 
@@ -112,6 +112,7 @@ public:
 
 };
 
+/*
 
 template<typename T>
 class array_ptr {
@@ -173,6 +174,7 @@ public:
     }
 
 };
+*/
 
 
 namespace sjtu {
@@ -183,18 +185,19 @@ namespace sjtu {
 template<typename T>
 class vector {
 private:
-    array_ptr<smart_ptr<T>> a;
+    smart_ptr<T>* a;
 //T**a;//FIXME MemLeak
     size_t space, num;
     static const size_t InitSize = 5;
 
     void doubleSpace() {
-        array_ptr<smart_ptr<T>> tmp;
+        smart_ptr<T>* tmp;
 //T**tmp;//FIXME MemLeak
         space *= 2;
-        tmp = new T *[space];
+        tmp = new smart_ptr<T>[space];
         for (int i = 0; i < num; ++i)
             tmp[i] = a[i];
+        delete[] a;
         a = tmp;
     }
 public:
@@ -388,10 +391,10 @@ public:
 	 * Atleast two: default constructor, copy constructor
 	 */
 	vector() : space(InitSize), num(0) {
-        a = new T *[InitSize];
+        a = new smart_ptr<T>[InitSize];
     }
 	vector(const vector &other) : space(other.space), num(other.num) {
-        a = new T *[space];
+        a = new smart_ptr<T>[space];
         for (int i = 0; i < num; ++i) {
             a[i] = new T(*other.a[i]);
         }
@@ -399,14 +402,17 @@ public:
 	/**
 	 * TODO Destructor
 	 */
-	~vector() {}
+	~vector() {
+	    clear();
+	}
 	/**
 	 * TODO Assignment operator
 	 */
 	vector &operator=(const vector &other) {
         if (this == &other)
             return *this;
-        a = new T *[space];
+        clear();
+        a = new smart_ptr<T>[space];
         for (int i = 0; i < num; ++i) {
             a[i] = new T(*other.a[i]);
         }
@@ -493,7 +499,10 @@ public:
 	/**
 	 * clears the contents
 	 */
-	void clear() {}
+	void clear() {
+        delete[] a;
+        a = nullptr;
+	}
 	/**
 	 * inserts value before pos
 	 * returns an iterator pointing to the inserted value.
@@ -554,7 +563,7 @@ public:
 	void pop_back() {
         if (!num)
             throw container_is_empty();
-        delete a[--num];
+        --num;
 	}
 };
 

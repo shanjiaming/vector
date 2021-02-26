@@ -7,6 +7,7 @@
 #include <cstddef>
 
 
+/*
 
 class Counter {
 private:
@@ -111,6 +112,7 @@ public:
     }
 
 };
+*/
 
 /*
 
@@ -185,16 +187,16 @@ namespace sjtu {
 template<typename T>
 class vector {
 private:
-    smart_ptr<T>* a;
+    T** a;
 //T**a;//FIXME MemLeak
     size_t space, num;
     static const size_t InitSize = 5;
 
     void doubleSpace() {
-        smart_ptr<T>* tmp;
+        T** tmp;
 //T**tmp;//FIXME MemLeak
         space *= 2;
-        tmp = new smart_ptr<T>[space];
+        tmp = new T*[space];
         for (int i = 0; i < num; ++i)
             tmp[i] = a[i];
         delete[] a;
@@ -391,10 +393,10 @@ public:
 	 * Atleast two: default constructor, copy constructor
 	 */
 	vector() : space(InitSize), num(0) {
-        a = new smart_ptr<T>[InitSize];
+        a = new T*[InitSize];
     }
 	vector(const vector &other) : space(other.space), num(other.num) {
-        a = new smart_ptr<T>[space];
+        a = new T*[space];
         for (int i = 0; i < num; ++i) {
             a[i] = new T(*other.a[i]);
         }
@@ -412,7 +414,7 @@ public:
         if (this == &other)
             return *this;
         clear();
-        a = new smart_ptr<T>[space];
+        a = new T*[space];
         for (int i = 0; i < num; ++i) {
             a[i] = new T(*other.a[i]);
         }
@@ -500,6 +502,8 @@ public:
 	 * clears the contents
 	 */
 	void clear() {
+        for (int i = 0; i < num; i++)
+            delete a[i];
         delete[] a;
         a = nullptr;
 	}
@@ -543,6 +547,7 @@ public:
 	iterator erase(const size_t &ind) {
         if (ind < 0 || ind >= num)
             throw index_out_of_bound();
+        delete a[ind];
         for (size_t i = ind; i < num; ++i)
             a[i] = a[i + 1];
         --num;
@@ -564,6 +569,7 @@ public:
         if (!num)
             throw container_is_empty();
         --num;
+        delete a[num];
 	}
 };
 

@@ -404,6 +404,8 @@ namespace sjtu {
          */
         ~vector() {
             clear();
+            delete [] a;
+            a = nullptr;
         }
         /**
          * TODO Assignment operator
@@ -505,10 +507,8 @@ namespace sjtu {
         void clear() {
             for (int i = 0; i < num; i++)
                 delete a[i];
-            delete[] a;
             num = 0;
             space = InitSize;
-            a = nullptr;
         }
         /**
          * inserts value before pos

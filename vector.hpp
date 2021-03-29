@@ -506,6 +506,8 @@ namespace sjtu {
             for (int i = 0; i < num; i++)
                 delete a[i];
             delete[] a;
+            num = 0;
+            space = InitSize;
             a = nullptr;
         }
         /**

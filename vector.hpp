@@ -403,8 +403,9 @@ namespace sjtu {
          * TODO Destructor
          */
         ~vector() {
-            clear();
-            delete [] a;
+            for (int i = 0; i < num; i++)
+                delete a[i];
+            delete[] a;
             a = nullptr;
         }
         /**
@@ -508,7 +509,6 @@ namespace sjtu {
             for (int i = 0; i < num; i++)
                 delete a[i];
             num = 0;
-            space = InitSize;
         }
         /**
          * inserts value before pos
